@@ -1,25 +1,64 @@
+var errorMessage: string = 'Opération impossible, veuillez entrer un montant positif'
+var successMessage: string = 'Opération effectuée avec succès'
+
+interface Transaction {
+    date: string;
+    amount: number;
+    newBalance: number;
+  }
+
+export default interface Horloge {
+
+}
+
 class Account {
-    _balance: number
+    private _balance: number
+    private _transactionList: Array<Transaction>
 
     constructor() {
         this._balance = 0
+        this._transactionList = []
     }
 
-    getBalance() {
-        return this._balance;
+    checkBalance(): number {
+        return this._balance
     }
 
-    cashDeposit(value: number) {
-        if (value <= 0) {
-            return 'Opération impossible, veuillez entrer un montant positif'
+    cashDeposit(amount: number): string {
+        if (amount <= 0) {
+            return errorMessage
         }
-        else {
-            this._balance += value
+
+        this._balance += amount
+        const dateOftransaction = new Date()
+        const newTransaction: Transaction = {
+            date: dateOftransaction.toLocaleString() + '.' + dateOftransaction.getMilliseconds(), 
+            amount: amount, 
+            newBalance: this._balance
         }
+
+        this._transactionList.push(newTransaction)
+        return successMessage
     }
 
-    cashWithdrawal(value: number) {
-        this._balance -= value
+    cashWithdrawal(amount: number): string {
+        if (amount <= 0) {
+            return errorMessage
+        }
+        this._balance -= amount
+        const dateOftransaction = new Date()
+        const newTransaction: Transaction = {
+            date: dateOftransaction.toLocaleString() + '.' + dateOftransaction.getMilliseconds(), 
+            amount: -amount, 
+            newBalance: this._balance
+        }
+
+        this._transactionList.push(newTransaction)
+        return successMessage
+    }
+
+    getTransactionList() {
+        return this._transactionList
     }
 }
 

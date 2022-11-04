@@ -2,7 +2,7 @@ const calculateTotalPrice = (listOfBooks: object): number => {
     const bookPrice: number = 8
 
     let numberOfBooks: number = 0
-    let discount: number = 1
+    let discount: number = 0
     let numberOfDifferentBooks: number = 0
     let result: number = 0
     
@@ -13,11 +13,23 @@ const calculateTotalPrice = (listOfBooks: object): number => {
         }
     }
     
-    if (numberOfDifferentBooks == 2) {
-        discount = 0.95
+    switch (numberOfDifferentBooks) {
+        case 2:
+            discount = 0.05
+            break
+        case 3:
+            discount = 0.1
+            break
+        case 4:
+            discount = 0.15
+            break
+        case 5:
+            discount = 0.2
+            break
     }
-
-    result = bookPrice * numberOfBooks * discount
+            
+    result = bookPrice * numberOfBooks * (1 - discount)
+    result = Math.round(result * 100) / 100
 
     return result
 }
