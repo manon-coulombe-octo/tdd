@@ -6,26 +6,46 @@ interface Transaction {
     amount: number,
     newBalance: number
   }
+export interface Transfer {
+    ibanFrom: string
+    ibanTo: string
+    amount: number
+  }
 
 export interface Horloge {
     getDate(): string
 }
 
-class HorlogeProd implements Horloge{
+export interface ServiceTransferApi {
+    sendMoney(info: Transfer): string
+}
+
+class ServiceTransferApiProd implements ServiceTransferApi {
+    sendMoney(info: Transfer): string {
+        return 'HTTP_CODE 202'
+    }
+}
+
+class HorlogeProd implements Horloge {
     getDate(): string {
         const dateOfToday = new Date()
         return dateOfToday.toLocaleString() + "." + dateOfToday.getMilliseconds()
     }
 }
+
 export class Account {
     private _balance: number
+    private _iban: string
     private _transactionList: Array<Transaction>
     private _horloge: Horloge
+    private _transferApi: ServiceTransferApi
 
-    constructor(horloge: Horloge) {
+    constructor(horloge: Horloge, transferApi: ServiceTransferApi) {
         this._balance = 0
         this._transactionList = []
         this._horloge = horloge
+        this._iban = 'FR123456'
+        this._transferApi = transferApi
     }
 
     checkBalance(): number {
@@ -67,5 +87,11 @@ export class Account {
 
     getTransactionList() {
         return this._transactionList
+    }
+
+    sendMoney(ibanTo, amount) {
+        const infoToSend = {ibanFrom: this._iban, ibanTo: ibanTo, amount: amount}
+        this._transferApi.sendMoney(infoToSend)
+        this.cashWithdrawal(amount)
     }
 }
