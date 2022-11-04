@@ -2,22 +2,30 @@ var errorMessage: string = 'Opération impossible, veuillez entrer un montant po
 var successMessage: string = 'Opération effectuée avec succès'
 
 interface Transaction {
-    date: string;
-    amount: number;
-    newBalance: number;
+    date: string,
+    amount: number,
+    newBalance: number
   }
 
-export default interface Horloge {
-
+export interface Horloge {
+    getDate(): string
 }
 
-class Account {
+class HorlogeProd implements Horloge{
+    getDate(): string {
+        const dateOfToday = new Date()
+        return dateOfToday.toLocaleString() + "." + dateOfToday.getMilliseconds()
+    }
+}
+export class Account {
     private _balance: number
     private _transactionList: Array<Transaction>
+    private _horloge: Horloge
 
-    constructor() {
+    constructor(horloge: Horloge) {
         this._balance = 0
         this._transactionList = []
+        this._horloge = horloge
     }
 
     checkBalance(): number {
@@ -30,9 +38,9 @@ class Account {
         }
 
         this._balance += amount
-        const dateOftransaction = new Date()
+        const dateOftransaction = this._horloge.getDate()
         const newTransaction: Transaction = {
-            date: dateOftransaction.toLocaleString() + '.' + dateOftransaction.getMilliseconds(), 
+            date: dateOftransaction, 
             amount: amount, 
             newBalance: this._balance
         }
@@ -46,9 +54,9 @@ class Account {
             return errorMessage
         }
         this._balance -= amount
-        const dateOftransaction = new Date()
+        const dateOftransaction = this._horloge.getDate()
         const newTransaction: Transaction = {
-            date: dateOftransaction.toLocaleString() + '.' + dateOftransaction.getMilliseconds(), 
+            date: dateOftransaction, 
             amount: -amount, 
             newBalance: this._balance
         }
@@ -61,5 +69,3 @@ class Account {
         return this._transactionList
     }
 }
-
-export default Account
